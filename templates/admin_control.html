@@ -1,0 +1,188 @@
+{% extends "header.html" %}
+{% block title %}Auction Control{% endblock %}
+{% block header %}
+<i class="fas fa-gavel"></i> Admin Auction Control
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .status-box p {
+        font-size: .95rem;
+        margin-bottom: 6px;
+    }
+
+    .current-bid {
+        font-weight: 700;
+        color: var(--yg-primary);
+    }
+
+    .next-bid {
+        background: rgba(156,39,176,.08);
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+        color: var(--yg-secondary);
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--yg-border);
+    }
+</style>
+
+<div class="row g-4">
+
+    <!-- LEFT SIDE -->
+    <div class="col-lg-6">
+        <div class="control-section status-box h-100">
+
+            <h2><i class="fas fa-bullhorn"></i> Current Auction Status</h2>
+
+            {% if status.current_player %}
+                <p><strong>Player:</strong>
+                    {{ status.current_player.name }}
+                    ({{ status.current_player.get_player_type_display }})
+                </p>
+
+                <p><strong>Base Price:</strong>
+                    {{ status.current_player.base_price }}
+                </p>
+
+                <p>
+                    <strong>Current Bid:</strong>
+                    ₹ <span class="current-bid">
+                        {{ status.current_bid_amount|default:status.current_player.base_price }}
+                    </span>
+                </p>
+
+                <p><strong>Bidding Team:</strong>
+                    {{ status.current_bid_team.name|default:"N/A" }}
+                </p>
+
+            {% else %}
+                <p class="text-soft">
+                    Auction is inactive. Select a player to begin.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="col-lg-6 d-flex flex-column gap-4">
+
+        {% if not status.is_active %}
+        <div class="control-section">
+            <h2><i class="fas fa-play"></i> Start Auction</h2>
+
+            <form method="post" class="form-row">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="start_auction">
+
+                <select name="player_id" required>
+                    <option value="">— Select Player —</option>
+                    {% for player in players_unsold %}
+                    <option value="{{ player.id }}">
+                        {{ player.name }} — ₹ {{ player.base_price }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button class="primary mt-3">
+                    <i class="fas fa-play"></i> Start Auction
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if status.is_active and status.current_player %}
+        <div class="control-section">
+
+            <h2><i class="fas fa-arrow-up"></i> Place Bid</h2>
+
+            <div class="next-bid">
+                Next Bid Amount:
+                ₹ {{ status.current_bid_amount|default:status.current_player.base_price|add:500 }}
+            </div>
+
+            <form method="post" class="form-row mb-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_bid">
+
+                <select name="team_id" required>
+                    <option value="">— Select Team —</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">
+                        {{ team.name }} (₹ {{ team.purse_remaining }})
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button class="primary mt-3 w-100">
+                    <i class="fas fa-plus"></i> Place Bid (+₹500)
+                </button>
+            </form>
+
+            <div class="d-flex gap-3">
+
+                {% if status.current_bid_team %}
+                <form method="post" class="flex-fill">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="sell_player">
+                    <button class="success w-100">
+                        <i class="fas fa-tag"></i> SELL
+                    </button>
+                </form>
+                {% endif %}
+
+                <form method="post" class="flex-fill">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="unsold_player">
+                    <button class="danger w-100">
+                        <i class="fas fa-times"></i> UNSOLD
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- TEAM PURSE SUMMARY -->
+<div class="control-section mt-4">
+    <h2><i class="fas fa-wallet"></i> Team Purse Summary</h2>
+
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Purse Remaining</th>
+                <th>Players</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+            <tr>
+                <td>{{ team.name }}</td>
+                <td>₹ {{ team.purse_remaining }}</td>
+                <td>
+                    <a href="{% url 'export_players_csv' team.id %}">
+                        <button class="success">
+                            📥 Download CSV
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

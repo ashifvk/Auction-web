@@ -1,0 +1,224 @@
+{% extends "header.html" %}
+
+{% block title %}Team Profiles | Football Auction{% endblock %}
+
+{% block header %}
+    <i class="fas fa-shield-alt"></i> Team Profiles
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --yg-primary: #6A1B9A;
+        --yg-secondary: #9C27B0;
+        --yg-accent: #E040FB;
+        --yg-bg: #F7F4FA;
+        --yg-card: #FFFFFF;
+        --yg-border: #E6DFF0;
+        --yg-text-main: #2E2A35;
+        --yg-text-soft: #7A728A;
+    }
+
+    body {
+        background: var(--yg-bg);
+    }
+
+    /* ================= TEAM CARD ================= */
+    .team-card {
+        height: 100%;
+        border-radius: 18px;
+        padding: 20px;
+        background: var(--yg-card);
+        border: 1px solid var(--yg-border);
+        box-shadow: 0 8px 24px rgba(106, 27, 154, 0.08);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    /* Disable hover jump on mobile */
+    @media (hover: hover) {
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(106, 27, 154, 0.18);
+        }
+    }
+
+    /* ================= TEAM HEADER ================= */
+    .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--yg-border);
+        flex-wrap: wrap;
+    }
+
+    .team-title {
+        font-family: "Poppins", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--yg-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .team-purse {
+        font-size: .85rem;
+        font-weight: 500;
+        color: var(--yg-text-soft);
+        white-space: nowrap;
+    }
+
+    .team-purse span {
+        font-weight: 700;
+        color: var(--yg-primary);
+    }
+
+    .team-manager {
+        font-size: .8rem;
+        color: var(--yg-text-soft);
+        margin-bottom: 10px;
+    }
+
+    /* ================= PLAYERS ================= */
+    .players-section {
+        margin-top: 16px;
+    }
+
+    .players-title {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+        color: var(--yg-secondary);
+        margin-bottom: 10px;
+    }
+
+    .player-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-bottom: 1px dashed var(--yg-border);
+        border-radius: 8px;
+        transition: background .2s ease;
+        flex-wrap: wrap;
+    }
+
+    .player-row:last-child {
+        border-bottom: none;
+    }
+
+    .player-row:hover {
+        background: rgba(156, 39, 176, 0.05);
+    }
+
+    .player-name {
+        font-weight: 600;
+        font-size: .9rem;
+        color: var(--yg-text-main);
+    }
+
+    .player-role {
+        font-size: .75rem;
+        color: var(--yg-text-soft);
+    }
+
+    .player-price {
+        font-weight: 700;
+        font-size: .85rem;
+        color: var(--yg-primary);
+        margin-left: auto;
+    }
+
+    .no-player {
+        padding: 14px;
+        font-size: .8rem;
+        color: var(--yg-text-soft);
+        font-style: italic;
+        text-align: center;
+        background: rgba(156, 39, 176, 0.05);
+        border-radius: 10px;
+    }
+
+    /* ================= MOBILE OPTIMIZATION ================= */
+    @media (max-width: 576px) {
+        .team-card {
+            padding: 16px;
+        }
+
+        .team-title {
+            font-size: 1.05rem;
+        }
+
+        .player-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .player-price {
+            margin-left: 0;
+            align-self: flex-end;
+        }
+    }
+</style>
+
+<div class="row g-4">
+
+    {% for team, data in contexts.items %}
+    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+
+        <div class="team-card">
+
+            <!-- TEAM HEADER -->
+            <div class="team-header">
+                <h2 class="team-title">
+                    <i class="fas fa-flag me-1"></i> {{ team }}
+                </h2>
+
+                <div class="team-purse">
+                    Purse Left:
+                    <span>{{ data.purse_remaining }}</span>
+                </div>
+            </div>
+            <span style="font-size: 12px; color: #0f0f0f">
+                    Manager : {{ data.manager_name }}</span>
+
+            <!-- PLAYERS -->
+            <div class="players-section">
+                <div class="players-title">
+                    Players Purchased
+                </div>
+
+                {% if data.players_sold %}
+                    {% for p in data.players_sold %}
+                        <div class="player-row">
+                            <div>
+                                <div class="player-name">{{ p.name }}</div>
+                                <div class="player-role">{{ p.player_type }}</div>
+                            </div>
+                            <div class="player-price">
+                                {{ p.final_price }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-player">
+                        No players purchased yet
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

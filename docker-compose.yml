@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django_auction_web
+    ports:
+      - "8000:8000"
+    restart: always
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             daphne -b 0.0.0.0 -p 8000 auction_project.asgi:application"
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: auction_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  static_volume:
+  media_volume:
