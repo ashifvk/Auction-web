@@ -104,16 +104,11 @@
 
             <h2><i class="fas fa-arrow-up"></i> Place Bid</h2>
 
-            <div class="next-bid">
-                Next Bid Amount:
-                ₹ {{ status.current_bid_amount|default:status.current_player.base_price|add:500 }}
-            </div>
-
             <form method="post" class="form-row mb-3">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="update_bid">
 
-                <select name="team_id" required>
+                <select name="team_id" required id='teamSelect'>
                     <option value="">— Select Team —</option>
                     {% for team in teams %}
                     <option value="{{ team.id }}">
@@ -122,22 +117,35 @@
                     {% endfor %}
                 </select>
 
-                <button class="primary mt-3 w-100">
-                    <i class="fas fa-plus"></i> Place Bid (+₹500)
-                </button>
+                <div class="row mt-3">
+                    <div class="col-4">
+                        <button type="submit" name="bid_amount" value="10" class="primary w-100">
+                            <i class="fas fa-plus"></i> ₹10
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" name="bid_amount" value="20" class="primary w-100">
+                            <i class="fas fa-plus"></i> ₹20
+                        </button>
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" name="bid_amount" value="30" class="primary w-100">
+                            <i class="fas fa-plus"></i> ₹30
+                        </button>
+                    </div>
+                </div>
             </form>
 
             <div class="d-flex gap-3">
 
-                {% if status.current_bid_team %}
                 <form method="post" class="flex-fill">
+                    <input type="hidden" name="team_id" value="" id="selectedTeamId">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="sell_player">
                     <button class="success w-100">
                         <i class="fas fa-tag"></i> SELL
                     </button>
                 </form>
-                {% endif %}
 
                 <form method="post" class="flex-fill">
                     {% csrf_token %}
@@ -184,5 +192,12 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.getElementById("teamSelect").addEventListener("change", function () {
+    let selectedValue = this.value;
+    document.getElementById("selectedTeamId").value = selectedValue;
+});
+</script>
 
 {% endblock %}

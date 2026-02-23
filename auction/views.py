@@ -153,11 +153,9 @@ def admin_auction_control(request):
         # --- UPDATE BID ---
         elif action == 'update_bid' and status.is_active:
             team_id = request.POST.get('team_id')
+            bid_amount = Decimal(request.POST.get('bid_amount'))
             current_bid = status.current_bid_amount
-            if not status.current_bid_team:
-                new_bid_str = current_bid
-            else:
-                new_bid_str = current_bid + 500
+            new_bid_str = current_bid + bid_amount
 
             try:
                 new_bid = Decimal(new_bid_str)
@@ -171,7 +169,7 @@ def admin_auction_control(request):
                     status.current_bid_amount < new_bid
                     <= bid_team.purse_remaining
             )
-            if new_bid == 1000 or is_valid_bid:
+            if is_valid_bid:
                 status.current_bid_amount = new_bid
                 status.current_bid_team = bid_team
                 status.save()
@@ -183,10 +181,22 @@ def admin_auction_control(request):
                 message = "Bid must be strictly higher than the current bid."
 
         # --- SELL PLAYER ---
-        elif action == 'sell_player' and status.current_player and status.current_bid_team:
+        elif action == 'sell_player' and status.current_player:
             player = status.current_player
             team = status.current_bid_team
+            team_id = request.POST.get('team_id', None)
+            if team:
+                # team exists from the current bid
+                pass
+            else:
+                try:
+                    team = Team.objects.get(id=team_id)
+                except:
+                    team = None
             price = status.current_bid_amount
+            if team is None:
+                message = "No Team has placed a valid bid. Cannot sell player."
+                return render(request, 'admin_control.html', locals())
 
             # Finalize player sale details
             player.is_sold = True
