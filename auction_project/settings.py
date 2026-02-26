@@ -29,8 +29,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '.ngrok-free.app',
-    '192.168.29.184',
-    '192.168.109.157',
+    '192.168.20.4',
 ]
 
 # Application definition
