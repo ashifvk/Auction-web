@@ -41,28 +41,69 @@
     <div class="col-lg-6">
         <div class="control-section status-box h-100">
 
-            <h2><i class="fas fa-bullhorn"></i> Current Auction Status</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="m-0"><i class="fas fa-bullhorn"></i> Current Auction Status</h2>
+                {% if status.current_bid_team %}
+                <button style="width: 100px;background: red;" class="secondary small" id="toggleEditBtn"><i class="fas fa-edit"></i> Edit</button>
+                {% endif %}
+            </div>
 
             {% if status.current_player %}
-                <p><strong>Player:</strong>
-                    {{ status.current_player.name }}
-                    ({{ status.current_player.get_player_type_display }})
-                </p>
 
-                <p><strong>Base Price:</strong>
-                    {{ status.current_player.base_price }}
-                </p>
+                <div id="editSection" style="display: none; border: 1px solid var(--yg-secondary); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                    <p style="text-align: center;"><strong><i class="fas fa-edit"></i> Edit Current Bid</strong></p>
+                    
+                    <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="manual_edit_bid">
+                        <div class="mb-2">
+                            <label class="small" style="margin-bottom: 5px;">Current Bid Amount:</label>
+                            <input type="number" name="current_bid_amount" value="{{ status.current_bid_amount }}" step="0.01" class="form-control" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--yg-border);">
+                        </div>
+                        <div class="mb-2">
+                            <label class="small" style="margin-bottom: 5px;">Bidding Team:</label>
+                            <select name="team_id" class="form-control" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--yg-border);">
+                                <option value="">— None —</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}" {% if status.current_bid_team.id == team.id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="primary w-100 small mt-2">Update Bid Manually</button>
+                    </form>
 
-                <p>
-                    <strong>Current Bid:</strong>
-                    ₹ <span class="current-bid">
-                        {{ status.current_bid_amount|default:status.current_player.base_price }}
-                    </span>
-                </p>
+                    <hr>
+                    
+                    <p class="text-danger small"><strong><i class="fas fa-undo"></i> Quick Revert</strong></p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="revert_bid">
+                        <button class="danger w-100 small"><i class="fas fa-undo"></i> Revert to Previous Bid</button>
+                    </form>
+                </div>
+                <div id="bid-status-div">
+                    <p><strong>Player:</strong>
+                        {{ status.current_player.name }}
+                        ({{ status.current_player.get_player_type_display }})
+                    </p>
 
-                <p><strong>Bidding Team:</strong>
-                    {{ status.current_bid_team.name|default:"N/A" }}
-                </p>
+                    <p><strong>Base Price:</strong>
+                        {{ status.current_player.base_price }}
+                    </p>
+
+                    <p>
+                        <strong>Current Bid:</strong>
+                        ₹ <span class="current-bid">
+                            {{ status.current_bid_amount|default:status.current_player.base_price }}
+                        </span>
+                    </p>
+
+                    <p><strong>Bidding Team:</strong>
+                        {{ status.current_bid_team.name|default:"N/A" }}
+                    </p>
+                </div>
 
             {% else %}
                 <p class="text-soft">
@@ -172,6 +213,7 @@
             <tr>
                 <th>Team</th>
                 <th>Purse Remaining</th>
+                <th>Max Bid Allowed</th>
                 <th>Players</th>
             </tr>
         </thead>
@@ -180,11 +222,17 @@
             <tr>
                 <td>{{ team.name }}</td>
                 <td>₹ {{ team.purse_remaining }}</td>
+                <td>₹ {{ team.get_max_bid_amount }}</td>
                 <td>
-                    <a href="{% url 'export_players_csv' team.id %}">
-                        <button class="success">
-                            📥 Download CSV
-                        </button>
+                    <div class="small text-soft mb-2">
+                        {% for player in team.players.all %}
+                            {{ player.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            No players
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'team_players' team.id %}">
+                            <i class="fas fa-eye"></i> View
                     </a>
                 </td>
             </tr>
@@ -195,9 +243,28 @@
 
 <script>
     document.getElementById("teamSelect").addEventListener("change", function () {
-    let selectedValue = this.value;
-    document.getElementById("selectedTeamId").value = selectedValue;
-});
+        let selectedValue = this.value;
+        document.getElementById("selectedTeamId").value = selectedValue;
+    });
+
+    const toggleBtn = document.getElementById('toggleEditBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const editSection = document.getElementById('editSection');
+            const bidStatusDiv = document.getElementById('bid-status-div');
+            if (editSection.style.display === 'none') {
+                editSection.style.display = 'block';
+                bidStatusDiv.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+                toggleBtn.classList.add('danger');
+            } else {
+                editSection.style.display = 'none';
+                bidStatusDiv.style.display = 'block';
+                toggleBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                toggleBtn.classList.remove('danger');
+            }
+        });
+    }
 </script>
 
 {% endblock %}

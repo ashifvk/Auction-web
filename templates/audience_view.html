@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>YOUGotaGift Premier League | Football Auction</title>
+    <title>{{ settings.title }} | {{ settings.auction_type }} Auction</title>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
@@ -182,8 +182,8 @@
 <body>
 
 <header class="auction-header">
-    <div class="auction-title">YOUGotaGift Premier League</div>
-    <div class="auction-subtitle">Football Auction • Season 2</div>
+    <div class="auction-title">{{ settings.title }}</div>
+    <div class="auction-subtitle">{{ settings.auction_type }} Auction -  Season 3</div>
     <div id="status-message">Auction Paused</div>
 </header>
 

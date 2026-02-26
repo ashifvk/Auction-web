@@ -170,7 +170,7 @@
 
 <div class="row g-4">
 
-    {% for team, data in contexts.items %}
+    {% for team in teams %}
     <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
 
         <div class="team-card">
@@ -178,16 +178,16 @@
             <!-- TEAM HEADER -->
             <div class="team-header">
                 <h2 class="team-title">
-                    <i class="fas fa-flag me-1"></i> {{ team }}
+                    <i class="fas fa-flag me-1"></i> {{ team.name }}
                 </h2>
 
                 <div class="team-purse">
                     Purse Left:
-                    <span>{{ data.purse_remaining }}</span>
+                    <span>{{ team.purse_remaining }}</span>
                 </div>
             </div>
             <span style="font-size: 12px; color: #0f0f0f">
-                    Manager : {{ data.manager_name }}</span>
+                    Manager : {{ team.owner }}</span>
 
             <!-- PLAYERS -->
             <div class="players-section">
@@ -195,12 +195,12 @@
                     Players Purchased
                 </div>
 
-                {% if data.players_sold %}
-                    {% for p in data.players_sold %}
+                {% if team.players.all %}
+                    {% for p in team.players.all %}
                         <div class="player-row">
                             <div>
                                 <div class="player-name">{{ p.name }}</div>
-                                <div class="player-role">{{ p.player_type }}</div>
+                                <div class="player-role">{{ p.get_player_type_display }}</div>
                             </div>
                             <div class="player-price">
                                 {{ p.final_price }}
