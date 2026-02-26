@@ -50,6 +50,8 @@ class Player(models.Model):
     is_sold = models.BooleanField(default=False)
     sold_to_team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True, related_name='players')
     final_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    random_row = models.FloatField(default=0.0) # Used for random initial ordering
+    auction_round = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return self.name

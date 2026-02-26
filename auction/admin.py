@@ -8,6 +8,7 @@ class PlayerAdmin(admin.ModelAdmin):
         'name', 'get_profile_photo', 'phone_number', 'player_type',
         'base_price', 'is_sold', 'sold_to_team', 'final_price'
     )
+    search_fields = ('name',)
 
 
     def get_profile_photo(self, obj):

@@ -143,7 +143,8 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="m-0"><i class="fas fa-bullhorn"></i> Current Auction Status</h2>
                 {% if status.current_bid_team %}
-                <button style="width: 100px;background: red;" class="secondary small" id="toggleEditBtn"><i class="fas fa-edit"></i> Edit</button>
+                <button style="width: 100px;background: red;" class="secondary small" id="toggleEditBtn"><i
+                        class="fas fa-edit"></i> Edit</button>
                 {% endif %}
             </div>
 
@@ -243,26 +244,28 @@
     <div class="col-lg-6 d-flex flex-column gap-4">
 
         {% if not status.is_active %}
-        <div class="control-section">
-            <h2><i class="fas fa-play"></i> Start Auction</h2>
+        <div class="control-section status-box">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="m-0 border-0 p-0"><i class="fas fa-play text-success"></i> Start Auction</h2>
+            </div>
 
-            <form method="post" class="form-row">
+            {% if next_player_in_queue %}
+            <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="start_auction">
-
-                <select name="player_id" required>
-                    <option value="">— Select Player —</option>
-                    {% for player in players_unsold %}
-                    <option value="{{ player.id }}">
-                        {{ player.name }} — ₹ {{ player.base_price }}
-                    </option>
-                    {% endfor %}
-                </select>
-
-                <button class="primary mt-3">
-                    <i class="fas fa-play"></i> Start Auction
+                <button class="primary w-100 py-3" style="font-size: 1.1rem; border-radius: 12px;">
+                    <i class="fas fa-play me-2"></i> Start Auction
                 </button>
+                <p class="text-soft small text-center mt-2 m-0">
+                    Player will be  automatically selected
+                </p>
             </form>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <p class="text-soft">No more players.</p>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
 

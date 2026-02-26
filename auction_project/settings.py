@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -150,6 +151,48 @@ CHANNEL_LAYERS = {
 }
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Ramallur Premier League Admin",
+    "site_header": "Ramallur Premier League",
+    "site_brand": "Ramallur Premier League",
+    "welcome_sign": "Welcome to the Auction Control Center",
+    "copyright": "Ramallur Premier League",
+    "search_model": "auction.Player",
+    "user_avatar": None,
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auction.Player": "fas fa-user",
+        "auction.Team": "fas fa-users",
+        "auction.AuctionStatus": "fas fa-gavel",
+        "auction.Settings": "fas fa-cog",
+        "auction.SportsType": "fas fa-flag",
+    },
+    "order_with_respect_to": ["auction", "auth"],
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
+    "navbar_small_text": False,
+    "footer_small_text": True,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-info",
+    "accent": "accent-info",
+    "navbar": "navbar-dark navbar-info",
+    "sidebar": "sidebar-dark-info",
+    "button_classes": {
+        "primary": "btn-info",
+        "secondary": "btn-outline-info",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}
 
 
 CSRF_TRUSTED_ORIGINS = [

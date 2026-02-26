@@ -12,6 +12,7 @@ daphne==4.2.1
 Django==5.2.8
 djangorestframework==3.16.1
 django-cors-headers==4.9.0
+django-jazzmin==3.0.1
 hyperlink==21.0.0
 idna==3.11
 incremental==24.7.2

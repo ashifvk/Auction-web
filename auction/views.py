@@ -1,5 +1,7 @@
 import json
 import csv
+import random
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
@@ -157,10 +159,19 @@ def bid_validation(amount, bid_team):
 def admin_auction_control(request):
     """Admin interface to start/control the bidding process."""
     status = AuctionStatus.get_instance()
-    # Order by ID to ensure a consistent list, or order by a relevant auction sequence field
-    players_unsold = Player.objects.filter(is_sold=False).order_by('id')
+    # Ensure initial random ordering is set for new/unsorted players
+    unsorted_players = Player.objects.filter(is_sold=False, random_row=0)
+    if unsorted_players.exists():
+        for player in unsorted_players:
+            player.random_row = random.random()
+            player.save(update_fields=['random_row'])
+
+    # Sort by auction_round first, then random_row for a fair random queue
+    players_unsold = Player.objects.filter(is_sold=False).order_by(
+        'auction_round', 'random_row', 'id')
     teams = Team.objects.prefetch_related('players').all()
     message = None
+    next_player_in_queue = players_unsold.first()
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -169,8 +180,13 @@ def admin_auction_control(request):
         if action == 'start_auction':
             player_id = request.POST.get('player_id')
             # Fetch the player and ensure they are unsold
-            next_player = get_object_or_404(Player, id=player_id,
-                                            is_sold=False)
+            if player_id:
+                next_player = get_object_or_404(Player, id=player_id, is_sold=False)
+            else:
+                next_player = next_player_in_queue
+                if not next_player:
+                    message = "No players left to auction."
+                    return render(request, 'admin_control.html', locals())
 
             # Set the initial auction state
             status.current_player = next_player
@@ -308,7 +324,9 @@ def admin_auction_control(request):
         elif action == 'unsold_player' and status.current_player:
             player = status.current_player
 
-            # Notify frontend before clearing status
+            player.auction_round = (player.auction_round or 1) + 1
+            player.save(update_fields=['auction_round'])
+
             push_auction_update('unsold', player)
 
             # Clear current auction state
@@ -322,6 +340,7 @@ def admin_auction_control(request):
     context = {
         'status': status,
         'players_unsold': players_unsold,
+        'next_player_in_queue': next_player_in_queue,
         'teams': teams,
         'message': message,
     }
