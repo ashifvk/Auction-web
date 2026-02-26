@@ -7,31 +7,130 @@
 {% block content %}
 
 <style>
-    .status-box p {
-        font-size: .95rem;
-        margin-bottom: 6px;
+    .status-box {
+        position: relative;
+        overflow: hidden;
     }
 
-    .current-bid {
-        font-weight: 700;
-        color: var(--yg-primary);
-    }
-
-    .next-bid {
-        background: rgba(156,39,176,.08);
-        padding: 10px;
-        border-radius: 10px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-align: center;
-        color: var(--yg-secondary);
-    }
-
-    select {
+    .status-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid var(--yg-border);
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .player-card {
+        display: flex;
+        gap: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid var(--border-light);
+        margin-bottom: 20px;
+    }
+
+    .player-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: var(--card-bg-alt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--accent);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .player-image i {
+        font-size: 3rem;
+        color: var(--text-soft);
+    }
+
+    .player-info h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        margin: 0 0 5px 0;
+        color: var(--accent);
+    }
+
+    .player-tag {
+        display: inline-block;
+        padding: 3px 10px;
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--accent);
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+
+    .price-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .price-item {
+        background: rgba(15, 23, 42, 0.4);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+    }
+
+    .price-label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-soft);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+
+    .price-value {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .bid-highlight {
+        grid-column: span 2;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1));
+        border: 1px solid var(--accent);
+    }
+
+    .bid-highlight .price-value {
+        font-size: 2.2rem;
+        color: var(--success);
+    }
+
+    .team-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: var(--card-bg-alt);
+        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        font-weight: 600;
+        color: white;
+    }
+
+    .team-badge i {
+        color: var(--warning);
+    }
+
+    #toggleEditBtn {
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 0.85rem;
+        white-space: nowrap;
     }
 </style>
 
@@ -50,65 +149,92 @@
 
             {% if status.current_player %}
 
-                <div id="editSection" style="display: none; border: 1px solid var(--yg-secondary); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
-                    <p style="text-align: center;"><strong><i class="fas fa-edit"></i> Edit Current Bid</strong></p>
-                    
-                    <form method="post" class="mb-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="manual_edit_bid">
-                        <div class="mb-2">
-                            <label class="small" style="margin-bottom: 5px;">Current Bid Amount:</label>
-                            <input type="number" name="current_bid_amount" value="{{ status.current_bid_amount }}" step="0.01" class="form-control" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--yg-border);">
-                        </div>
-                        <div class="mb-2">
-                            <label class="small" style="margin-bottom: 5px;">Bidding Team:</label>
-                            <select name="team_id" class="form-control" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--yg-border);">
-                                <option value="">— None —</option>
-                                {% for team in teams %}
+            <div id="editSection"
+                style="display: none; border: 1px solid var(--danger); padding: 1.5rem; border-radius: 14px; margin-bottom: 1.5rem; background: rgba(239, 68, 68, 0.05);">
+                <p style="text-align: center; color: var(--danger);"><strong><i class="fas fa-edit"></i> Admin
+                        Override</strong></p>
+
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="manual_edit_bid">
+                    <div class="mb-3">
+                        <label class="small text-soft" style="margin-bottom: 8px; display: block;">Current Bid
+                            Amount:</label>
+                        <input type="number" name="current_bid_amount" value="{{ status.current_bid_amount }}"
+                            step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-soft" style="margin-bottom: 8px; display: block;">Bidding Team:</label>
+                        <select name="team_id">
+                            <option value="">— None —</option>
+                            {% for team in teams %}
                                 <option value="{{ team.id }}" {% if status.current_bid_team.id == team.id %}selected{% endif %}>
-                                    {{ team.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
+                                {{ team.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="primary w-100">Update Bid Manually</button>
+                </form>
+
+                <hr style="opacity: 0.1; margin: 1.5rem 0;">
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="revert_bid">
+                    <button class="danger w-100"><i class="fas fa-undo"></i> Revert to Previous Bid</button>
+                </form>
+            </div>
+
+            <div id="bid-status-div">
+                <div class="player-card">
+                    <div class="player-image">
+                        {% if status.current_player.photo %}
+                        <img src="{{ status.current_player.photo.url }}" alt="{{ status.current_player.name }}"
+                            class="w-100 h-100 rounded-2" style="object-fit: cover;">
+                        {% else %}
+                        <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="player-info">
+                        <span class="player-tag">{{ status.current_player.get_player_type_display }}</span>
+                        <h3>{{ status.current_player.name }}</h3>
+                    </div>
+                </div>
+
+                <div class="price-grid">
+                    <div class="price-item">
+                        <span class="price-label">Base Price</span>
+                        <span class="price-value">₹ {{ status.current_player.base_price }}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">Current Bidder</span>
+                        <div class="mt-1">
+                            {% if status.current_bid_team %}
+                            <div class="team-badge">
+                                <i class="fas fa-shield-alt"></i> {{ status.current_bid_team.name }}
+                            </div>
+                            {% else %}
+                            <span class="text-soft italic">N/A</span>
+                            {% endif %}
                         </div>
-                        <button type="submit" class="primary w-100 small mt-2">Update Bid Manually</button>
-                    </form>
-
-                    <hr>
-                    
-                    <p class="text-danger small"><strong><i class="fas fa-undo"></i> Quick Revert</strong></p>
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="revert_bid">
-                        <button class="danger w-100 small"><i class="fas fa-undo"></i> Revert to Previous Bid</button>
-                    </form>
-                </div>
-                <div id="bid-status-div">
-                    <p><strong>Player:</strong>
-                        {{ status.current_player.name }}
-                        ({{ status.current_player.get_player_type_display }})
-                    </p>
-
-                    <p><strong>Base Price:</strong>
-                        {{ status.current_player.base_price }}
-                    </p>
-
-                    <p>
-                        <strong>Current Bid:</strong>
-                        ₹ <span class="current-bid">
-                            {{ status.current_bid_amount|default:status.current_player.base_price }}
+                    </div>
+                    <div class="price-item bid-highlight">
+                        <span class="price-label">Current Bid Amount</span>
+                        <span class="price-value">
+                            ₹ {{ status.current_bid_amount|default:status.current_player.base_price }}
                         </span>
-                    </p>
-
-                    <p><strong>Bidding Team:</strong>
-                        {{ status.current_bid_team.name|default:"N/A" }}
-                    </p>
+                    </div>
                 </div>
+            </div>
 
             {% else %}
-                <p class="text-soft">
-                    Auction is inactive. Select a player to begin.
+            <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+                <i class="fas fa-gavel fa-3x mb-3" style="opacity: 0.2;"></i>
+                <p class="text-soft m-0">
+                    Auction is currently inactive.<br>Select a player from the list to begin.
                 </p>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -226,13 +352,13 @@
                 <td>
                     <div class="small text-soft mb-2">
                         {% for player in team.players.all %}
-                            {{ player.name }}{% if not forloop.last %}, {% endif %}
+                        {{ player.name }}{% if not forloop.last %}, {% endif %}
                         {% empty %}
-                            No players
+                        No players
                         {% endfor %}
                     </div>
                     <a href="{% url 'team_players' team.id %}">
-                            <i class="fas fa-eye"></i> View
+                        <i class="fas fa-eye"></i> View
                     </a>
                 </td>
             </tr>

@@ -3,7 +3,7 @@
 {% block title %}Team Profiles | Football Auction{% endblock %}
 
 {% block header %}
-    <i class="fas fa-shield-alt"></i> Team Profiles
+<i class="fas fa-shield-alt"></i> Team Profiles
 {% endblock %}
 
 {% block content %}
@@ -146,27 +146,73 @@
         border-radius: 10px;
     }
 
+    /* ================= BACK BUTTON ================= */
+    .back-btn-container {
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .back-auction-btn {
+        background: linear-gradient(135deg, var(--yg-primary), var(--yg-secondary));
+        color: white;
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 25px rgba(106, 27, 154, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+    }
+
+    .back-auction-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(106, 27, 154, 0.4);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .back-auction-btn i {
+        font-size: 1.1rem;
+        animation: pulse-icon 2s infinite;
+    }
+
+    @keyframes pulse-icon {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
     /* ================= MOBILE OPTIMIZATION ================= */
     @media (max-width: 576px) {
-        .team-card {
-            padding: 16px;
-        }
-
-        .team-title {
-            font-size: 1.05rem;
-        }
-
-        .player-row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .player-price {
-            margin-left: 0;
-            align-self: flex-end;
+        .back-auction-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
         }
     }
 </style>
+
+<div class="back-btn-container">
+    <a href="{% url 'audience_view' %}" class="back-auction-btn">
+        <i class="fas fa-gavel"></i> Back to Auction Room
+    </a>
+</div>
 
 <div class="row g-4">
 
@@ -191,7 +237,7 @@
                 </div>
             </div>
             <span style="font-size: 12px; color: #0f0f0f">
-                    Manager : {{ team.owner }}</span>
+                Manager : {{ team.owner }}</span>
 
             <!-- PLAYERS -->
             <div class="players-section">
@@ -200,21 +246,21 @@
                 </div>
 
                 {% if team.players.all %}
-                    {% for p in team.players.all %}
-                        <div class="player-row">
-                            <div>
-                                <div class="player-name">{{ p.name }}</div>
-                                <div class="player-role">{{ p.get_player_type_display }}</div>
-                            </div>
-                            <div class="player-price">
-                                {{ p.final_price }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="no-player">
-                        No players purchased yet
+                {% for p in team.players.all %}
+                <div class="player-row">
+                    <div>
+                        <div class="player-name">{{ p.name }}</div>
+                        <div class="player-role">{{ p.get_player_type_display }}</div>
                     </div>
+                    <div class="player-price">
+                        {{ p.final_price }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="no-player">
+                    No players purchased yet
+                </div>
                 {% endif %}
             </div>
 
