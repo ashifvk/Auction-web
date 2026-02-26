@@ -1,13 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ settings.title }} | {{ settings.auction_type }} Auction</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@700;900&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -53,7 +56,7 @@
         #status-message {
             margin-top: 14px;
             font-weight: 600;
-            background: rgba(255,255,255,.15);
+            background: rgba(255, 255, 255, .15);
             display: inline-block;
             padding: 8px 16px;
             border-radius: 20px;
@@ -67,7 +70,7 @@
             border-radius: 22px;
             display: flex;
             overflow: hidden;
-            box-shadow: 0 30px 70px rgba(0,0,0,.25);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, .25);
         }
 
         /* ================= PLAYER IMAGE ================= */
@@ -84,7 +87,7 @@
             height: 250px;
             object-fit: cover;
             border-radius: 18px;
-            border: 5px solid rgba(255,255,255,.25);
+            border: 5px solid rgba(255, 255, 255, .25);
             margin-bottom: 18px;
             background: #fff;
         }
@@ -96,7 +99,7 @@
             padding: 10px 14px;
             border-radius: 12px;
             font-size: .95rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
         }
 
         /* ================= PLAYER DETAILS ================= */
@@ -158,6 +161,51 @@
             letter-spacing: .5px;
         }
 
+        /* ================= PREMIUM BUTTON ================= */
+        .view-teams-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .view-teams-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .view-teams-btn:active {
+            transform: translateY(0);
+        }
+
+        .view-teams-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .view-teams-btn:hover svg {
+            transform: translateX(3px);
+        }
+
         /* ================= RESPONSIVE ================= */
         @media (max-width: 992px) {
             .auction-card {
@@ -181,119 +229,128 @@
 
 <body>
 
-<header class="auction-header">
-    <div class="auction-title">{{ settings.title }}</div>
-    <div class="auction-subtitle">{{ settings.auction_type }} Auction -  Season 3</div>
-    <div id="status-message">Auction Paused</div>
-</header>
+    <header class="auction-header">
+        <a href="{% url 'team_profile' %}" class="view-teams-btn">
+            View Teams
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+        <div class="auction-title">{{ settings.title }}</div>
+        <div class="auction-subtitle">{{ settings.auction_type }} Auction - Season 3</div>
+        <div id="status-message">Auction Paused</div>
+    </header>
 
-<section class="auction-card">
+    <section class="auction-card">
 
-    <div class="player-image">
-        <img id="player-photo" src="{% static 'images/player_placeholder.png' %}">
-        <div class="price-tag" id="player-base-price">Base Price: ₹ 0</div>
-    </div>
-
-    <div class="player-details">
-
-        <div id="player-name">Awaiting Player...</div>
-
-        <div class="stats">
-            <div class="stat-box">Position<span id="player-position">--</span></div>
-            <div class="stat-box">Goals<span id="player-goals">0</span></div>
-            <div class="stat-box">Assists<span id="player-assists">0</span></div>
-            <div class="stat-box">Appearances<span id="player-appearances">0</span></div>
+        <div class="player-image">
+            <img id="player-photo" src="{% static 'images/player_placeholder.png' %}">
+            <div class="price-tag" id="player-base-price">Base Price: ₹ 0</div>
         </div>
 
-        <div class="bidding">
-            <div class="bid-box" id="current-bid-amount">CURRENT BID: ₹ 0</div>
-            <div class="bid-box" id="bidding-team-highlight">BIDDING TEAM: N/A</div>
+        <div class="player-details">
+
+            <div id="player-name">Awaiting Player...</div>
+
+            <div class="stats">
+                <div class="stat-box">Position<span id="player-position">--</span></div>
+                <div class="stat-box">Goals<span id="player-goals">0</span></div>
+                <div class="stat-box">Assists<span id="player-assists">0</span></div>
+                <div class="stat-box">Appearances<span id="player-appearances">0</span></div>
+            </div>
+
+            <div class="bidding">
+                <div class="bid-box" id="current-bid-amount">CURRENT BID: ₹ 0</div>
+                <div class="bid-box" id="bidding-team-highlight">BIDDING TEAM: N/A</div>
+            </div>
+
         </div>
+    </section>
 
-    </div>
-</section>
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 🔒 JS LOGIC UNCHANGED -->
+    <script>
+        /* Dynamic Auction Functionality */
 
-<!-- 🔒 JS LOGIC UNCHANGED -->
-<script>
-/* Dynamic Auction Functionality */
+        const PLAY_STYLES = [
+            "Poacher", "Target Man", "Anchor Man", "Libero"
+        ];
+        function randomPlayStyle() {
+            return PLAY_STYLES[Math.floor(Math.random() * PLAY_STYLES.length)];
+        }
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
+                .format(amount)
+                .replace('₹', '₹ ');
+        }
 
-const PLAY_STYLES = [
-    "Poacher", "Target Man", "Anchor Man", "Libero"
-];
-function randomPlayStyle() {
-    return PLAY_STYLES[Math.floor(Math.random() * PLAY_STYLES.length)];
-}
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
-        .format(amount)
-        .replace('₹', '₹ ');
-}
+        let image_url = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACUCAMAAAAqEXLeAAAAP1BMVEX6+vqPj4////+MjIzX19eJiYmFhYXx8fHPz8/AwMDt7e2xsbG6urqhoaGTk5PKysqqqqre3t5/f3/n5+ebm5uM+kD6AAADUklEQVR4nO2b23KjMAxAsXwDczX4/791DUlbdkuIlWBEZnWeOunLGRnZRhJFwTAMwzAMwzAMwzAMcxxwh9rjIdHNqr5qmqr39pKiULiy1aPRMqLNqAflimt5Avi6M1KskKZr/JXCCS7IvwxvaNHaq1iCbcyG4i2c1TU0YQp6W3GJZusuYAlqa6VXwRSe3BLKR0v9bakVsSWonaX+spS0sUxxnFd8orS04sla39CB0BGGlEDOlg1ZKGNipznGFadLnjZZUg9EinH3SXUUwhBlOKQrxvUOJJLgEYGMoXQkknXyE7mEkiTBbcBJtgSO4DuMoxDdRCBZJm7k36Gk2CorpKTuCSRrrGRzviPiuLlL1gSSuOSOzyTFyfgRkujlppAcPuGZbLDZXZ2/BUGPlSwJJNOv5XcobpRTQCnKYM93xKa3HCiuasiHkqiOYVE3c02hiHjrXhyJ3rzBpUvKjiRtZtL3c11RORYu9Q2CaP9ZAJWYO1SlgZtlnWRpCI7tNSkZTnL/WQG2fWppqIpVK8u93sPNkS5pfth9bZQU18gNoJcPNbUguEVuAm7Y7pNIU1+jIbYAfhD/RjOGd6DvM62Bwjdi/ImnNGNXTRfrJS8t+akfQrcQht5dqY28YplrsM7Z4tITDgxDBLzBWYbOq5eZJ4byK9oqLLM/r6JDn32PVx3qbXvzQA95T0uoNLZMtaUpc16NoB/fV5wZ89VcYDpGMdLlmxbCtm4ek6+pMx3wPH7RZeosoyYFnmEyPZVw3GrnK/MDtnOzK1mzJEu+L4lt1O1KZipPA7ZRt4fJNEcA/Sfsk7hppX10rtmW5BL5czIW0Y/LnHzFX+gPk8x37QV3lKPI2Hs6bKfM2sTD9Tx3JPMpzvv5IZa5dvI7yHnEbWSbtx8B/v2jMf9s/AFno8nfkADsSOKvQJ4yovheLE+I40xc8ZezR57k+Oxbpj3O/M4JbP1K4Urq5tzOjg9YTanD2Z/lAJTD477nb7QcFEFvBwpVm7QUkkbXnqiHFyPTt3EZ97+2i/9uy4KyQwbgyqbttNkylfHnbqjUGbX8p57W+b5phRnH0dyZ/xRtU3p3AcMvlhaNtZP3qlTK+8nef6MW2+DsnhLDMAzDMAzDMAzDMP8HfwCAsyXGSQihOwAAAABJRU5ErkJggg==';
+        function resetDisplay() {
+            document.getElementById('player-name').textContent = 'Awaiting Player...';
+            document.getElementById('player-photo').src = image_url;
+            document.getElementById('player-base-price').textContent = 'Base Price: ₹ 0';
+            document.getElementById('player-position').textContent = '--';
+            document.getElementById('player-goals').textContent = '0';
+            document.getElementById('player-assists').textContent = '0';
+            document.getElementById('player-appearances').textContent = '0';
+            document.getElementById('current-bid-amount').textContent = 'CURRENT BID: ₹ 0';
+            document.getElementById('bidding-team-highlight').textContent = 'BIDDING TEAM: N/A';
+            document.getElementById('status-message').style.display = 'block';
+        }
+        function updatePlayerCard(data) {
+            document.getElementById('status-message').style.display = 'none';
+            document.getElementById('player-name').textContent = data.name;
+            if (data.photo_url) {
+                document.getElementById('player-photo').src = data.photo_url;
+            } else {
+                document.getElementById('player-photo').src = image_url;
+            }
+            document.getElementById('player-base-price').textContent = `Base Price: ${formatCurrency(data.base_price)}`;
+            document.getElementById('player-position').textContent = data.type ?? '--';
+            document.getElementById('player-goals').textContent = data.goals ?? '0';
+            document.getElementById('player-assists').textContent = data.assists ?? '0';
+            document.getElementById('player-appearances').textContent = data.appearances ?? '0';
+        }
+        function updateBidInfo(data) {
+            document.getElementById('current-bid-amount').textContent = `CURRENT BID: ${formatCurrency(data.bid_amount)}`;
+            document.getElementById('bidding-team-highlight').textContent = `BIDDING TEAM: ${data.bid_team ?? 'N/A'}`;
+        }
+        const initialData = JSON.parse('{{ current_status_json|escapejs|default:"null" }}');
+        if (initialData && initialData.is_active) {
+            updatePlayerCard(initialData);
+            updateBidInfo(initialData);
+        } else {
+            resetDisplay();
+        }
+        const wsScheme = window.location.protocol === "https:" ? "wss://" : "ws://";
 
-let image_url = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAACUCAMAAAAqEXLeAAAAP1BMVEX6+vqPj4////+MjIzX19eJiYmFhYXx8fHPz8/AwMDt7e2xsbG6urqhoaGTk5PKysqqqqre3t5/f3/n5+ebm5uM+kD6AAADUklEQVR4nO2b23KjMAxAsXwDczX4/791DUlbdkuIlWBEZnWeOunLGRnZRhJFwTAMwzAMwzAMwzAMcxxwh9rjIdHNqr5qmqr39pKiULiy1aPRMqLNqAflimt5Avi6M1KskKZr/JXCCS7IvwxvaNHaq1iCbcyG4i2c1TU0YQp6W3GJZusuYAlqa6VXwRSe3BLKR0v9bakVsSWonaX+spS0sUxxnFd8orS04sla39CB0BGGlEDOlg1ZKGNipznGFadLnjZZUg9EinH3SXUUwhBlOKQrxvUOJJLgEYGMoXQkknXyE7mEkiTBbcBJtgSO4DuMoxDdRCBZJm7k36Gk2CorpKTuCSRrrGRzviPiuLlL1gSSuOSOzyTFyfgRkujlppAcPuGZbLDZXZ2/BUGPlSwJJNOv5XcobpRTQCnKYM93xKa3HCiuasiHkqiOYVE3c02hiHjrXhyJ3rzBpUvKjiRtZtL3c11RORYu9Q2CaP9ZAJWYO1SlgZtlnWRpCI7tNSkZTnL/WQG2fWppqIpVK8u93sPNkS5pfth9bZQU18gNoJcPNbUguEVuAm7Y7pNIU1+jIbYAfhD/RjOGd6DvM62Bwjdi/ImnNGNXTRfrJS8t+akfQrcQht5dqY28YplrsM7Z4tITDgxDBLzBWYbOq5eZJ4byK9oqLLM/r6JDn32PVx3qbXvzQA95T0uoNLZMtaUpc16NoB/fV5wZ89VcYDpGMdLlmxbCtm4ek6+pMx3wPH7RZeosoyYFnmEyPZVw3GrnK/MDtnOzK1mzJEu+L4lt1O1KZipPA7ZRt4fJNEcA/Sfsk7hppX10rtmW5BL5czIW0Y/LnHzFX+gPk8x37QV3lKPI2Hs6bKfM2sTD9Tx3JPMpzvv5IZa5dvI7yHnEbWSbtx8B/v2jMf9s/AFno8nfkADsSOKvQJ4yovheLE+I40xc8ZezR57k+Oxbpj3O/M4JbP1K4Urq5tzOjg9YTanD2Z/lAJTD477nb7QcFEFvBwpVm7QUkkbXnqiHFyPTt3EZ97+2i/9uy4KyQwbgyqbttNkylfHnbqjUGbX8p57W+b5phRnH0dyZ/xRtU3p3AcMvlhaNtZP3qlTK+8nef6MW2+DsnhLDMAzDMAzDMAzDMP8HfwCAsyXGSQihOwAAAABJRU5ErkJggg==';
-function resetDisplay() {
-    document.getElementById('player-name').textContent = 'Awaiting Player...';
-    document.getElementById('player-photo').src = image_url;
-    document.getElementById('player-base-price').textContent = 'Base Price: ₹ 0';
-    document.getElementById('player-position').textContent = '--';
-    document.getElementById('player-goals').textContent = '0';
-    document.getElementById('player-assists').textContent = '0';
-    document.getElementById('player-appearances').textContent = '0';
-    document.getElementById('current-bid-amount').textContent = 'CURRENT BID: ₹ 0';
-    document.getElementById('bidding-team-highlight').textContent = 'BIDDING TEAM: N/A';
-    document.getElementById('status-message').style.display = 'block';
-}
-function updatePlayerCard(data) {
-    document.getElementById('status-message').style.display = 'none';
-    document.getElementById('player-name').textContent = data.name;
-    if (data.photo_url){
-        document.getElementById('player-photo').src = data.photo_url;
-    } else {
-        document.getElementById('player-photo').src = image_url;
-    }
-    document.getElementById('player-base-price').textContent = `Base Price: ${formatCurrency(data.base_price)}`;
-    document.getElementById('player-position').textContent = data.type ?? '--';
-    document.getElementById('player-goals').textContent = data.goals ?? '0';
-    document.getElementById('player-assists').textContent = data.assists ?? '0';
-    document.getElementById('player-appearances').textContent = data.appearances ?? '0';
-}
-function updateBidInfo(data) {
-    document.getElementById('current-bid-amount').textContent = `CURRENT BID: ${formatCurrency(data.bid_amount)}`;
-    document.getElementById('bidding-team-highlight').textContent = `BIDDING TEAM: ${data.bid_team ?? 'N/A'}`;
-}
-const initialData = JSON.parse('{{ current_status_json|escapejs|default:"null" }}');
-if (initialData && initialData.is_active) {
-    updatePlayerCard(initialData);
-    updateBidInfo(initialData);
-} else {
-    resetDisplay();
-}
-const wsScheme = window.location.protocol === "https:" ? "wss://" : "ws://";
-
-const socket = new WebSocket(wsScheme + window.location.host + '/ws/auction/');
-socket.onmessage = e => {
-    const { action, data } = JSON.parse(e.data);
-    if (action === 'new_player') {
-        updatePlayerCard(data);
-        updateBidInfo(data);
-    }
-    else if (action === 'bid_update') {
-        updateBidInfo(data);
-    }
-    else if (action === 'player_sold') {
-        document.getElementById('status-message').textContent =
-            `${data.player_name} SOLD to ${data.sold_to} for ${formatCurrency(data.price)} ⚽`;
-        document.getElementById('status-message').style.display = 'block';
-        setTimeout(resetDisplay, 7000);
-    }
-    else if (action === 'unsold') {
-        document.getElementById('status-message').textContent = data.message;
-        document.getElementById('status-message').style.display = 'block';
-        setTimeout(resetDisplay, 4000);
-    }
-};
-</script>
+        const socket = new WebSocket(wsScheme + window.location.host + '/ws/auction/');
+        socket.onmessage = e => {
+            const { action, data } = JSON.parse(e.data);
+            if (action === 'new_player') {
+                updatePlayerCard(data);
+                updateBidInfo(data);
+            }
+            else if (action === 'bid_update') {
+                updateBidInfo(data);
+            }
+            else if (action === 'player_sold') {
+                document.getElementById('status-message').textContent =
+                    `${data.player_name} SOLD to ${data.sold_to} for ${formatCurrency(data.price)} ⚽`;
+                document.getElementById('status-message').style.display = 'block';
+                setTimeout(resetDisplay, 7000);
+            }
+            else if (action === 'unsold') {
+                document.getElementById('status-message').textContent = data.message;
+                document.getElementById('status-message').style.display = 'block';
+                setTimeout(resetDisplay, 4000);
+            }
+        };
+    </script>
 </body>
+
 </html>

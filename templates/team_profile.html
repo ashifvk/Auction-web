@@ -185,6 +185,10 @@
                     Purse Left:
                     <span>{{ team.purse_remaining }}</span>
                 </div>
+                <div class="team-purse">
+                    Max Bid Amount:
+                    <span>{{ team.get_max_bid_amount }}</span>
+                </div>
             </div>
             <span style="font-size: 12px; color: #0f0f0f">
                     Manager : {{ team.owner }}</span>
@@ -192,7 +196,7 @@
             <!-- PLAYERS -->
             <div class="players-section">
                 <div class="players-title">
-                    Players Purchased
+                    Players Purchased ({{ team.players.count }})
                 </div>
 
                 {% if team.players.all %}
