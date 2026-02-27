@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block submit_buttons_bottom %}
+  {{ block.super }}
+  {% if reset_url and user.is_superuser %}
+    <div class="form-group" style="margin-top: 1em;">
+      <a href="{{ reset_url }}" class="btn btn-danger form-control">{% trans "Reset player" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}

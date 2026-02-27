@@ -308,19 +308,18 @@
 
             <div class="d-flex gap-3">
 
-                <form method="post" class="flex-fill">
-                    <input type="hidden" name="team_id" value="" id="selectedTeamId">
+                <form id="sellForm"  class="flex-fill" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="sell_player">
-                    <button class="success w-100">
+                    <button type="button" id="sellBtn" class="success w-100">
                         <i class="fas fa-tag"></i> SELL
                     </button>
                 </form>
 
-                <form method="post" class="flex-fill">
+                <form id="unsoldForm"  class="flex-fill"  method="post">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="unsold_player">
-                    <button class="danger w-100">
+                    <button type="button" id="unsoldBtn" class="danger w-100">
                         <i class="fas fa-times"></i> UNSOLD
                     </button>
                 </form>
@@ -369,6 +368,88 @@
         </tbody>
     </table>
 </div>
+
+<!-- snippet inserted somewhere near the top of your <body> -->
+<div id="confirmModal" class="confirm-modal">
+  <div class="confirm-content">
+    <p id="confirmText"></p>
+    <div class="buttons">
+      <button id="confirmYes" class="confirm-yes">Yes</button>
+      <button id="confirmNo"  class="confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.confirm-modal {
+    display: none;
+    position: fixed;
+    inset:0;
+    background: rgba(0,0,0,.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.confirm-content {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 8px;
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+}
+.confirm-yes { 
+    background:#dc3545; 
+    color:#fff; 
+    margin-bottom: 10px;
+}
+.confirm-no  {    
+    background: black;
+    color: white; 
+}
+.confirm-yes:hover { background:#c82333; }
+.confirm-no:hover  { background: #333; }
+#confirmText {
+    color: var(--danger);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+</style>
+
+<script>
+(function() {
+    const modal  = document.getElementById('confirmModal');
+    const textEl = document.getElementById('confirmText');
+    const yesBtn = document.getElementById('confirmYes');
+    const noBtn  = document.getElementById('confirmNo');
+    let targetForm = null;
+
+    function open(msg, form) {
+        textEl.textContent = msg;
+        targetForm = form;
+        modal.style.display = 'flex';
+    }
+    function close() {
+        modal.style.display = 'none';
+        targetForm = null;
+    }
+
+    document.getElementById('sellBtn').addEventListener('click', function() {
+        open('Are you sure you want to SELL this player?', document.getElementById('sellForm'));
+    });
+    document.getElementById('unsoldBtn').addEventListener('click', function() {
+        open('Are you sure you want to mark this player UNSOLD?', document.getElementById('unsoldForm'));
+    });
+
+    yesBtn.addEventListener('click', function() {
+        if (targetForm) targetForm.submit();
+    });
+    noBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) close();
+    });
+})();
+</script>
 
 <script>
     document.getElementById("teamSelect").addEventListener("change", function () {

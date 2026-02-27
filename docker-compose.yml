@@ -11,8 +11,9 @@ services:
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py makemigrations &&
              python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    # command: "daphne -b 0.0.0.0 -p 8000 auction_project.asgi:application"
+             daphne -b 0.0.0.0 -p 8000 auction_project.asgi:application"
+    # command: "python manage.py runserver 0.0.0.0:8000"
+
 
     volumes:
       - .:/app
