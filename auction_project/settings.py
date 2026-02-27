@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-5m*%6)2rsd7r8r=+xozyn3crx54r^6g(yzd(t-3j&+fe(^x17@"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # settings.py
 ALLOWED_HOSTS = [
@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '.ngrok-free.app',
     '192.168.20.4',
+    'auction-webs.onrender.com'
 ]
 
 # Application definition
