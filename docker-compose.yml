@@ -18,7 +18,7 @@ services:
     volumes:
       - .:/app
       - static_volume:/app/static
-      # - media_volume:/app/media
+      - media_volume:/app/media
     depends_on:
       - redis
 
