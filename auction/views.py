@@ -101,6 +101,13 @@ def is_admin(user):
     return user.is_superuser
 
 
+def players_list(request):
+    players = Player.objects.all().order_by('name')
+    if request.GET.get('search'):
+        search_query = request.GET['search']
+        players = players.filter(name__icontains=search_query)
+    return render(request, 'player_cards.html', {'players': players})
+
 def team_profile(request):
     """
     Public or admin view to see team compositions.

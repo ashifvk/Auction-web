@@ -162,66 +162,80 @@
         }
 
         /* ================= PREMIUM BUTTON ================= */
-        .view-teams-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+        .auction-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            margin-bottom: 20px;
+        }
+
+        /* Left & Right */
+        .header-left,
+        .header-right {
+            flex: 1;
+        }
+
+        /* Center */
+        .header-center {
+            flex: 2;
+            text-align: center;
+        }
+
+        /* Title */
+        .auction-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Subtitle */
+        .auction-subtitle {
+            font-size: 14px;
+            color: #bbb;
+            margin-top: 4px;
+        }
+
+        /* Status Badge */
+        .auction-status {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #ff9800;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.4);
+        }
+
+        /* Buttons */
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #00c896, #00a67e);
             color: #fff;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            z-index: 100;
+            transition: 0.3s ease;
         }
 
-        .view-teams-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .action-btn:hover {
+            background: linear-gradient(135deg, #00a67e, #008f6a);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 200, 150, 0.4);
         }
 
-        .view-teams-btn:active {
-            transform: translateY(0);
-        }
-
-        .view-teams-btn svg {
-            width: 18px;
-            height: 18px;
-            transition: transform 0.3s ease;
-        }
-
-        .view-teams-btn:hover svg {
-            transform: translateX(3px);
-        }
-
-        /* ================= RESPONSIVE ================= */
-        @media (max-width: 992px) {
-            .auction-card {
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auction-header {
                 flex-direction: column;
+                gap: 15px;
             }
 
-            .player-image {
-                width: 100%;
-            }
-
-            .player-details {
-                padding: 32px;
-            }
-
-            .bidding {
-                flex-direction: column;
+            .header-left,
+            .header-right,
+            .header-center {
+                text-align: center;
             }
         }
     </style>
@@ -230,17 +244,32 @@
 <body>
 
     <header class="auction-header">
-        <a href="{% url 'team_profile' %}" class="view-teams-btn">
-            View Teams
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </a>
-        <div class="auction-title">{{ settings.title }}</div>
-        <div class="auction-subtitle">{{ settings.auction_type }} Auction - Season 3</div>
-        <div id="status-message">Auction Paused</div>
+
+        <!-- Left Button -->
+        <div class="header-left">
+            <a href="{% url 'team_profile' %}" class="action-btn">
+                ← View Teams
+            </a>
+        </div>
+
+        <!-- Center Content -->
+        <div class="header-center">
+            <div class="auction-title">{{ settings.title }}</div>
+            <div class="auction-subtitle">
+                {{ settings.auction_type }} Auction - Season 3
+            </div>
+            <div id="status-message" class="auction-status">
+                Auction Paused
+            </div>
+        </div>
+
+        <!-- Right Button -->
+        <div class="header-right">
+            <a href="{% url 'players_list' %}" class="action-btn">
+                View Players →
+            </a>
+        </div>
+
     </header>
 
     <section class="auction-card">

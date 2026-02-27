@@ -1,0 +1,368 @@
+{% extends "header.html" %}
+
+{% block title %}Players | Football Auction{% endblock %}
+
+{% block header %}
+
+<div class="header-content">
+    Players
+    <form method="GET" class="search-form">
+        <div class="search-wrapper">
+            <input type="search"
+                name="search"
+                placeholder="Search players…"
+                value="{{ request.GET.search }}"
+                autocomplete="off">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+.header-content{
+   display: flex;
+    justify-content: space-between;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+/* Wrapper */
+.search-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.search-wrapper:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Input */
+.search-wrapper input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    background: transparent;
+}
+
+/* Placeholder */
+.search-wrapper input::placeholder {
+    color: #999;
+}
+
+/* Button */
+.search-wrapper button {
+    padding: 0 2px;
+    border: none;
+    background:#38bdf8;
+    color: #fff;
+    font-weight: 100;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* Button hover */
+.search-wrapper button:hover {
+    background: black;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .search-wrapper {
+        max-width: 95%;
+    }
+}
+
+.player-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  gap:40px;
+  align-items:start;
+}
+.player-card{
+  position:relative;
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(22,28,37,0.08);
+  transition:transform .15s ease, box-shadow .15s ease;
+  display:flex;
+  flex-direction:column;
+}
+.player-card:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(22,28,37,0.12); }
+
+.player-media{
+  width:100%;
+  height:auto;
+  background:#f3f4f6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.player-media img{
+  width:100%;
+  height:auto%;
+  object-fit:cover;
+  display:block;
+}
+
+/* sold overlay gradient */
+.sold-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(124,58,237,0.28) 40%, rgba(220,38,38,0.18) 100%);
+  mix-blend-mode: multiply;
+  opacity:0;
+  transition:opacity .15s ease;
+}
+.player-card.sold .sold-overlay{ opacity:1; }
+
+/* sold ribbon */
+.sold-ribbon{
+  position:absolute;
+  left:-28px;
+  top:14px;
+  transform:rotate(-18deg);
+  background: linear-gradient(90deg,#7c3aed,#dc2626);
+  color:#fff;
+  padding:6px 64px;
+  font-weight:700;
+  font-size:13px;
+  box-shadow:0 6px 14px rgba(0,0,0,0.12);
+  border-radius:4px;
+}
+
+/* content */
+.player-body{
+  padding:12px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.player-name{
+  font-weight:700;
+  font-size:15px;
+  color:#111827;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.player-meta{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:13px;
+  color:#6b7280;
+}
+.player-type{
+  background:#eef2ff;
+  color:#4338ca;
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:600;
+}
+.player-price{
+  margin-top:4px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+.price{
+  font-size:16px;
+  font-weight:800;
+  color:#0f172a;
+}
+.team-badge{
+  background:linear-gradient(90deg,#06b6d4,#3b82f6);
+  color:#fff;
+  padding:6px 8px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* actions */
+.card-actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+.btn{
+  flex:1;
+  padding:8px 10px;
+  border-radius:8px;
+  border:0;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn-sell{ background:linear-gradient(90deg,#10b981,#059669); color:#fff; }
+.btn-unsold{ background:linear-gradient(90deg,#ef4444,#dc2626); color:#fff; }
+.btn-outline{ background:transparent; border:1px solid #e5e7eb; color:#111827; }
+
+/* small helpers */
+.no-image{
+  font-size:32px;
+  color:#9ca3af;
+}
+.sold-info{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+  color:#fff;
+  font-weight:700;
+  padding:8px 12px;
+}
+@media (max-width:520px){
+  .player-media{ height:140px; }
+}
+
+.main{
+    padding:50px;
+    max-width:1200px;
+    margin:0 auto;
+}
+
+</style>
+<div class="breadcrumbs" style="margin:12px 50px; font-size:14px; color:#6b7280;">
+    <a href="{% url 'audience_view' %}" style="color:#6b7280;">Auction Room </a> &raquo; Players
+</div>
+
+<div class="main">
+    <div class="player-grid">
+    {% for player in players %}
+        <div class="player-card {% if player.is_sold %}sold{% endif %}" data-player-id="{{ player.pk }}">
+        <div class="player-media">
+            {% if player.photo and player.photo.url %}
+            <img src="{{ player.photo.url }}" alt="{{ player.name }}">
+            {% else %}
+            <div class="no-image">👤</div>
+            {% endif %}
+        </div>
+
+        {% if player.is_sold %}
+            <div class="sold-overlay"></div>
+            <div class="sold-ribbon">SOLD</div>
+        {% endif %}
+
+        <div class="player-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="flex:1;min-width:0">
+                <div class="player-name" title="{{ player.name }}">{{ player.name }}</div>
+                <div class="player-meta">
+                <div class="player-type">{{ player.get_player_type_display }}</div>
+                </div>
+            </div>
+            {% if player.is_sold %}
+                <div class="sold-info" style="flex-direction:column;align-items:flex-end;">
+                <div style="font-size:18px">{{ player.final_price|default:"-" }}</div>
+                </div>
+            {% endif %}
+            </div>
+
+            <div class="player-price">
+            <div class="price">₹ {{ player.base_price }}</div>
+            <div class="team-badge">
+                {% if player.sold_to_team %}{{ player.sold_to_team.name }}{% else %}Available{% endif %}
+            </div>
+            </div>
+
+        </div>
+        </div>
+    {% empty %}
+        <p>No players found.</p>
+    {% endfor %}
+    </div>
+</div>
+
+<!-- confirm modal -->
+<div id="pcConfirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:1500;">
+  <div style="background:#fff;padding:20px;border-radius:10px;max-width:420px;width:92%;box-shadow:0 12px 40px rgba(2,6,23,.3);text-align:center;">
+    <p id="pcConfirmText" style="font-weight:700;margin-bottom:14px;"></p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="pcConfirmYes" style="background:linear-gradient(90deg,#ef4444,#dc2626);color:#fff;padding:10px 14px;border-radius:8px;border:0;font-weight:700;">Yes</button>
+      <button id="pcConfirmNo" style="background:#f3f4f6;color:#111827;padding:10px 14px;border-radius:8px;border:0;font-weight:700;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function getCookie(name){
+    const v=document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  const modal = document.getElementById('pcConfirmModal');
+  const txt = document.getElementById('pcConfirmText');
+  const yes = document.getElementById('pcConfirmYes');
+  const no  = document.getElementById('pcConfirmNo');
+  let pending = null;
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('button[data-action]');
+    if(!btn) return;
+    const action = btn.getAttribute('data-action');
+    const url = btn.getAttribute('data-url');
+    if(!url) {
+      alert('Action URL missing.');
+      return;
+    }
+    e.preventDefault();
+    const name = btn.closest('.player-card')?.querySelector('.player-name')?.textContent || 'player';
+    txt.textContent = action === 'sell'
+      ? `Confirm SELL "${name}" ?`
+      : `Confirm mark "${name}" as UNSOLD ?`;
+    pending = { url, action, card: btn.closest('.player-card') };
+    modal.style.display = 'flex';
+  });
+
+  no.addEventListener('click', function(){ modal.style.display='none'; pending=null; });
+
+  yes.addEventListener('click', function(){
+    if(!pending) return;
+    fetch(pending.url, {
+      method:'POST',
+      headers:{
+        'X-CSRFToken': csrftoken,
+        'Accept':'application/json',
+      },
+      credentials:'same-origin'
+    }).then(r=>{
+      if(r.ok) return r.json().catch(()=>({ok:true}));
+      throw new Error('Request failed');
+    }).then(data=>{
+      // optimistic UI: reload card or whole page
+      if(pending.card){
+        // simple reload to keep server state in sync
+        location.reload();
+      } else {
+        location.reload();
+      }
+    }).catch(()=> {
+      alert('Action failed. Refresh page and try again.');
+    }).finally(()=>{ modal.style.display='none'; pending=null; });
+  });
+
+  modal.addEventListener('click', function(e){ if(e.target===modal) { modal.style.display='none'; pending=null; }});
+})();
+</script>
+
+{% endblock %}

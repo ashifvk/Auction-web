@@ -10,5 +10,6 @@ urlpatterns = [
     path('export/players/<team_id>/', views.export_players_csv,
          name='export_players_csv'),
     path('team/<int:team_id>/players/', views.team_players, name='team_players'),
-    path('remove_player/<int:player_id>/', views.remove_player, name='remove_player')
+    path('remove_player/<int:player_id>/', views.remove_player, name='remove_player'),
+    path('players/', views.players_list, name='players_list'),
 ]
