@@ -310,7 +310,8 @@
 
                 <form id="sellForm"  class="flex-fill" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="sell_player">
+                    <input type="hidden" name="team_id" value="" id="selectedTeamId">
+                     <input type="hidden" name="action" value="sell_player">
                     <button type="button" id="sellBtn" class="success w-100">
                         <i class="fas fa-tag"></i> SELL
                     </button>
