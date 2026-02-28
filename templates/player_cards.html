@@ -277,7 +277,7 @@
             </div>
 
             <div class="player-price">
-            <div class="price">₹ {{ player.base_price }}</div>
+            <div class="price">₹ {% if player.is_sold %}{{ player.final_price }}{% else %}{{ player.base_price }}{% endif %}</div>
             <div class="team-badge">
                 {% if player.sold_to_team %}{{ player.sold_to_team.name }}{% else %}Available{% endif %}
             </div>
